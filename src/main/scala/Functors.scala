@@ -57,6 +57,20 @@ object Functors {
 
     }
 
+    // Example implementation for Reader
+    class ReaderFunctor[R]{
+        type M[x] = R => x
+
+        implicit val functor: Functor[M] = new Functor[M]{
+            def lift[A, B](f: A => B): M[A] => M[B] = f.compose
+        }
+    }
+
+    object ReaderFunctor{
+        implicit def apply[R]: ReaderFunctor[R] = new ReaderFunctor[R]
+    }
+
+
 
 }
 
@@ -80,6 +94,10 @@ object FunctorDemo extends App{
 
     val doubleCompose = List(None,Some(List(2)),Some(List()), None, Some(List(1,4,5))) fmap ((n: Int) => n * 2)
 
-    print(doubleCompose)
+    println(doubleCompose)
+
+
+    val readerFunctor = ReaderFunctor[String].functor
+    println(readerFunctor.lift((x:Int) => x * 2))
 
 }
