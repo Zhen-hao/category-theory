@@ -57,6 +57,7 @@ object Functors {
 
     }
 
+
     // Example implementation for Reader
     class ReaderFunctor[R]{
         type M[x] = R => x
@@ -70,6 +71,34 @@ object Functors {
         implicit def apply[R]: ReaderFunctor[R] = new ReaderFunctor[R]
     }
 
+
+
+    trait Bifunctor[F[_,_]]{
+
+        def bimap[A,B,C,D](ac: A => C)(bd: B => D): F[A,B] => F[C,D]
+            =  first[A,D,C](ac) compose second[A,B,D](bd)
+
+        def first[A,B,C]: (A => C) => F[A,B] => F[C,B]
+            = (g) => bimap(g)(identity)
+
+        def second[A,B,D]: (B => D) => F[A,B] => F[A,D]
+        = bimap(identity)
+
+    }
+
+
+    trait Profunctor[F[_,_]]{
+
+        def dimap[A,B,C,D](ab: A => B)(cd: C => D): F[B,C] => F[A,D]
+        =  first[A,B,D](ab) compose second[B,C,D](cd)
+
+        def first[A,B,C]: (A => B) => F[B,C] => F[A,C]
+        = (g) => dimap(g)(identity)
+
+        def second[A,B,C]: (B => C) => F[A,B] => F[A,C]
+        = dimap(identity)
+
+    }
 
 
 }
