@@ -101,6 +101,20 @@ object Functors {
     }
 
 
+    case class Pair[A,B](a: A, b: B)
+
+    object Bifunctor{
+
+        implicit def pairBifunctor: Bifunctor[Pair] = new Bifunctor[Pair] {
+            override def bimap[A, B, C, D](ac: A => C)(bd: B => D): Pair[A, B] => Pair[C, D] = {
+                case Pair(a, b) => Pair(ac(a), bd(b))
+            }
+        }
+
+    }
+
+
+
 }
 
 
@@ -128,5 +142,11 @@ object FunctorDemo extends App{
 
     val readerFunctor = ReaderFunctor[String].functor
     println(readerFunctor.lift((x:Int) => x * 2))
+
+    //val pairFunctor: Bifunctor[Pair] = Bifunctor.pairBifunctor
+    //println(pairFunctor.bimap((a: Int) => a * 2)((b: Long) => b +2)(Pair(5, 15L)))
+
+    //val pairFunctor = implicitly[Bifunctor[Pair]]
+    println(implicitly[Bifunctor[Pair]].bimap((a: Int) => a * 2)((b: Long) => b +2)(Pair(5, 15L)))
 
 }
